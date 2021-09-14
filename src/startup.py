@@ -70,7 +70,6 @@ while True:
             else:
                 print('暂无课程')
         else:
-            print('密码错误,程序退出')
-            sys.exit()
+            print('密码错误')
     counts += 1
     time.sleep(60)
