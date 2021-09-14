@@ -6,9 +6,8 @@ api = {
     'onlesson': 'https://changjiang.yuketang.cn/v/course_meta/on_lesson_courses',
     'attendlesson': 'https://changjiang.yuketang.cn/v/lesson/lesson_info_v2',
 }
-times = 900
+times = 960
 counts = 0
-successLessons = []
 
 
 def login(username, password):
@@ -31,12 +30,14 @@ def login(username, password):
 
 
 def getOnLessonData(cookies):
-    response = requests.get(url=api['onlesson'],cookies=cookies)
-    onlessons = response.json()['data']['on_lessons']
-    if len(onlessons) != 0:
+    response = requests.get(url=api['onlesson'], cookies=cookies)
+    if 'data' in response.json():
+        onlessons = response.json()['data']['on_lessons']
         return onlessons
     else:
-        return False
+        send.sendmsg('debug', json.dumps(response.json()))
+        onlessons = []
+        return onlessons
 
 
 def attendLesson(cookies, lesson_id):
@@ -51,26 +52,31 @@ def attendLesson(cookies, lesson_id):
         return lesson_name
 
 
-send.sendmsg(title='自动签到已启动', msg='自动签到已启动')
-cookies = login(USERNAME, PASSWORD)
-if cookies is False:
-    send.sendmsg('错误信息', msg='密码错误')
-    print('密码错误')
-    sys.exit()
-while True:
-    if counts >= times:
-        send.sendmsg(title='自动签到已关闭', msg='自动签到已关闭')
+def startup(counts, times):
+    successLessons = []
+    send.sendmsg(title='自动签到已启动', msg='自动签到已启动')
+    cookies = login(USERNAME, PASSWORD)
+    if cookies is False:
+        send.sendmsg('错误信息', msg='密码错误')
+        print('密码错误')
         sys.exit()
-    else:
-        onlessons = getOnLessonData(cookies)
-        if onlessons is not False:
-            for i in onlessons:
-                lesson_id = i['lesson_id']
-                lesson_name = attendLesson(cookies=cookies, lesson_id=lesson_id)
-                if (lesson_name in successLessons) is False:
-                    send.sendmsg(title='签到成功', msg='签到成功\n课程：'+lesson_name)
-                    successLessons.append(lesson_name)
+    while True:
+        if counts >= times:
+            send.sendmsg(title='自动签到已关闭', msg='自动签到已关闭')
+            sys.exit()
         else:
-            print('暂无课程')
-    counts += 1
-    time.sleep(60)
+            onlessons = getOnLessonData(cookies)
+            if len(onlessons) != 0:
+                for i in onlessons:
+                    lesson_id = i['lesson_id']
+                    lesson_name = attendLesson(cookies=cookies, lesson_id=lesson_id)
+                    if (lesson_name in successLessons) is False:
+                        send.sendmsg(title='签到成功', msg='签到成功\n课程：'+lesson_name)
+                        successLessons.append(lesson_name)
+            else:
+                print('暂无课程')
+        counts += 1
+        time.sleep(60)
+
+
+startup(counts=counts, times=times)
