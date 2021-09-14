@@ -52,25 +52,25 @@ def attendLesson(cookies, lesson_id):
 
 
 send.sendmsg(title='自动签到已启动', msg='自动签到已启动')
+cookies = login(USERNAME, PASSWORD)
+if cookies is False:
+    send.sendmsg('错误信息', msg='密码错误')
+    print('密码错误')
+    sys.exit()
 while True:
-    cookies = login(USERNAME, PASSWORD)
     if counts >= times:
         send.sendmsg(title='自动签到已关闭', msg='自动签到已关闭')
         sys.exit()
     else:
-        if cookies:
-            onlessons = getOnLessonData(cookies)
-            if onlessons is not False:
-                for i in onlessons:
-                    lesson_id = i['lesson_id']
-                    lesson_name = attendLesson(cookies=cookies, lesson_id=lesson_id)
-                    if (lesson_name in successLessons) is False:
-                        send.sendmsg(title='签到成功', msg='签到成功\n课程：'+lesson_name)
-                        successLessons.append(lesson_name)
-            else:
-                print('暂无课程')
+        onlessons = getOnLessonData(cookies)
+        if onlessons is not False:
+            for i in onlessons:
+                lesson_id = i['lesson_id']
+                lesson_name = attendLesson(cookies=cookies, lesson_id=lesson_id)
+                if (lesson_name in successLessons) is False:
+                    send.sendmsg(title='签到成功', msg='签到成功\n课程：'+lesson_name)
+                    successLessons.append(lesson_name)
         else:
-            send.sendmsg('错误信息', msg=cookies)
-            print('密码错误')
+            print('暂无课程')
     counts += 1
     time.sleep(60)
