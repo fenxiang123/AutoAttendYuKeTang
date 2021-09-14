@@ -22,7 +22,7 @@ def login(username, password):
         'pwd': pwd,
     }
     data = json.dumps(data)
-    response = requests.post(url=api['login'],data=data)
+    response = requests.post(url=api['login'], data=data)
     if response.json()['success']:
         cookies = requests.utils.dict_from_cookiejar(response.cookies)
         return cookies
@@ -53,11 +53,11 @@ def attendLesson(cookies, lesson_id):
 
 send.sendmsg(title='自动签到已启动', msg='自动签到已启动')
 while True:
+    cookies = login(USERNAME, PASSWORD)
     if counts >= times:
         send.sendmsg(title='自动签到已关闭', msg='自动签到已关闭')
         sys.exit()
     else:
-        cookies = login(USERNAME, PASSWORD)
         if cookies:
             onlessons = getOnLessonData(cookies)
             if onlessons is not False:
