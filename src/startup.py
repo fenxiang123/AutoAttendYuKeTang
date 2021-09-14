@@ -70,6 +70,7 @@ while True:
             else:
                 print('暂无课程')
         else:
+            send.sendmsg('错误信息', msg=cookies)
             print('密码错误')
     counts += 1
     time.sleep(60)
