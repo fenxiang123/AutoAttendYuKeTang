@@ -33,8 +33,13 @@ def login(username, password):
 def getOnLessonData(cookies):
     response = requests.get(url=api['onlesson'], cookies=cookies)
     if 'data' in response.json():
-        onlessons = response.json()['data']['onLessonClassrooms']
-        return onlessons
+        if 'onLessonClassrooms' in response.json()['data']:
+            onlessons = response.json()['data']['onLessonClassrooms']
+            return onlessons
+        else:
+            send.sendmsg('debug', json.dumps(response.json()))
+            onlessons = []
+            return onlessons
     else:
         send.sendmsg('debug', json.dumps(response.json()))
         onlessons = []
