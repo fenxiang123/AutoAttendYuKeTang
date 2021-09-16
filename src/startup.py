@@ -3,8 +3,9 @@ import send
 from config import USERNAME,PASSWORD
 api = {
     'login': 'https://changjiang.yuketang.cn/pc/login/verify_pwd_login/',
-    'onlesson': 'https://changjiang.yuketang.cn/v/course_meta/on_lesson_courses',
+    'onlesson': 'https://changjiang.yuketang.cn/api/v3/classroom/on-lesson',
     'attendlesson': 'https://changjiang.yuketang.cn/v/lesson/lesson_info_v2',
+    'attendlessonv3': 'https://changjiang.yuketang.cn/api/v3/classroom/basic-info'
 }
 times = 960
 counts = 0
@@ -32,7 +33,7 @@ def login(username, password):
 def getOnLessonData(cookies):
     response = requests.get(url=api['onlesson'], cookies=cookies)
     if 'data' in response.json():
-        onlessons = response.json()['data']['on_lessons']
+        onlessons = response.json()['data']['onLessonClassrooms']
         return onlessons
     else:
         send.sendmsg('debug', json.dumps(response.json()))
@@ -40,16 +41,17 @@ def getOnLessonData(cookies):
         return onlessons
 
 
-def attendLesson(cookies, lesson_id):
+def attendLesson(cookies, classroom_id):
     params = {
-        'lesson_id': lesson_id
+        'classroom_id': classroom_id
     }
-    response = requests.get(url=api['attendlesson'], cookies=cookies, params=params)
+    response = requests.get(url=api['attendlessonv3'], cookies=cookies, params=params)
     data = response.json()
-    if data['success']:
-        lesson_name = data['data']['classroom']['courseName']
-        print(lesson_name)
+    if data['code'] == 0:
+        lesson_name = data['data']['courseName']
         return lesson_name
+    else:
+        return '暂无课程'
 
 
 def startup(counts, times):
@@ -68,15 +70,15 @@ def startup(counts, times):
             onlessons = getOnLessonData(cookies)
             if len(onlessons) != 0:
                 for i in onlessons:
-                    lesson_id = i['lesson_id']
-                    lesson_name = attendLesson(cookies=cookies, lesson_id=lesson_id)
+                    classroom_id = i['classroomId']
+                    lesson_name = attendLesson(cookies=cookies, classroom_id=classroom_id)
                     if (lesson_name in successLessons) is False:
-                        send.sendmsg(title='签到成功', msg='签到成功\n课程：'+lesson_name)
+                        send.sendmsg(title='签到成功', msg='签到成功\n\n课程：'+lesson_name)
                         successLessons.append(lesson_name)
             else:
                 print('暂无课程')
         counts += 1
-        time.sleep(60)
+        time.sleep(20)
 
 
 startup(counts=counts, times=times)
