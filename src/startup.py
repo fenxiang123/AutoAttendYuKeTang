@@ -77,7 +77,7 @@ def startup(counts, times):
                 for i in onlessons:
                     classroom_id = i['classroomId']
                     lesson_name = attendLesson(cookies=cookies, classroom_id=classroom_id)
-                    if (lesson_name in successLessons) is False or lesson_name is False:
+                    if (lesson_name in successLessons) is False or lesson_name is not False:
                         send.sendmsg(title='签到成功', msg='签到成功\n\n课程：'+lesson_name)
                         successLessons.append(lesson_name)
             else:
