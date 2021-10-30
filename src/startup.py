@@ -2,10 +2,10 @@ import requests, rsa, sys, json, base64, time
 import send
 from config import USERNAME,PASSWORD
 api = {
-    'login': 'https://changjiang.yuketang.cn/pc/login/verify_pwd_login/',
-    'onlesson': 'https://changjiang.yuketang.cn/api/v3/classroom/on-lesson',
-    'attendlesson': 'https://changjiang.yuketang.cn/v/lesson/lesson_info_v2',
-    'attendlessonv3': 'https://changjiang.yuketang.cn/api/v3/classroom/basic-info'
+    'login': 'https://www.yuketang.cn/pc/login/verify_pwd_login/',
+    'onlesson': 'https://www.yuketang.cn/api/v3/classroom/on-lesson',
+    'attendlesson': 'https://www.yuketang.cn/v/lesson/lesson_info_v2',
+    'attendlessonv3': 'https://www.yuketang.cn/api/v3/classroom/basic-info'
 }
 times = 960
 counts = 0
